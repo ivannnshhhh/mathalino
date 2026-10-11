@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" role="img" aria-label="City Route preview">
+  <defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#163f68"/><stop offset="1" stop-color="#62c6e9"/></linearGradient><linearGradient id="road" x2="0" y2="1"><stop stop-color="#33435c"/><stop offset="1" stop-color="#142033"/></linearGradient></defs>
+  <rect width="800" height="420" fill="url(#sky)"/><circle cx="625" cy="82" r="42" fill="#ffe39a" opacity=".9"/>
+  <path d="M0 230h800v190H0z" fill="#36546a"/><path d="M0 260 200 206l112 54 97-95 132 95 105-55 154 55v160H0z" fill="#23384e"/>
+  <g fill="#172638"><path d="M35 125h102v160H35z"/><path d="M158 80h85v205h-85z"/><path d="M263 142h115v143H263z"/><path d="M410 92h86v193h-86z"/><path d="M524 132h125v153H524z"/><path d="M675 104h81v181h-81z"/></g>
+  <g fill="#72e5e5" opacity=".8"><path d="M58 151h18v25H58zm38 0h18v25H96zm85-43h17v25h-17zm38 0h17v25h-17zm70 62h19v24h-19zm38 0h19v24h-19zm107-48h17v24h-17zm38 0h17v24h-17zm70 38h18v25h-18zm39 0h18v25h-18zm116-31h18v25h-18zm37 0h18v25h-18z"/></g>
+  <path d="M0 420 300 278h200l300 142z" fill="url(#road)"/><path d="M390 310h20v28h-20zm0 54h20v28h-20z" fill="#56e7e5"/>
+</svg>

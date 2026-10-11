@@ -1,0 +1,314 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Be MATHalino — Math Arcade Runner</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ================================================
+     ANIMATED LANDING BACKGROUND
+================================================ -->
+<div id="landing-bg"></div>
+
+<!-- ================================================
+     LANDING SCREEN
+================================================ -->
+<div id="landing" class="screen">
+  <audio id="landing-bgm" src="assets/audio/bgmusictwo.mp3" preload="auto" loop></audio>
+  <main class="landing-content" aria-label="Be MATHalino game setup">
+  <div class="brand-kicker">ARCADE MATH RUNNER</div>
+  <div class="title-wrapper">
+    <div class="game-title">Be <span>MATH</span>alino</div>
+    <div class="brand-line"></div>
+  </div>
+  <div class="game-subtitle">Solve fast. Run farther. Master the numbers.</div>
+  <div class="high-score-display" id="hs-display"><span class="score-icon" aria-hidden="true">★</span> Best: 0 pts</div>
+  <span id="landing-level-status" hidden>Wala pang napili</span><span id="background-status" hidden>Wala pang napili</span>
+  <section class="setup-panel" data-panel="levels" data-step="01">
+    <button class="setup-panel-trigger" id="levels-trigger" type="button" onclick="toggleLandingPanel('levels')" aria-expanded="false" aria-controls="levels-options">
+      <span class="setup-panel-label">Levels</span>
+      <span class="setup-panel-summary" id="levels-summary">Choose a level</span>
+      <span class="setup-panel-hint">Choose your challenge</span><span class="setup-panel-chevron" aria-hidden="true">⌄</span>
+    </button>
+    <div class="setup-panel-options" id="levels-options" role="region" aria-labelledby="levels-trigger" aria-hidden="true"><div class="setup-panel-options-inner">
+      <div id="landing-level-cards" class="level-cards landing-level-cards" aria-label="Level selection"></div>
+    </div></div>
+  </section>
+  <section class="setup-panel" data-panel="background" data-step="02">
+    <button class="setup-panel-trigger" id="background-trigger" type="button" onclick="toggleLandingPanel('background')" aria-expanded="false" aria-controls="background-options">
+      <img class="setup-summary-thumb" id="background-summary-thumb" src="assets/stages/stage-city.svg" alt="" aria-hidden="true">
+      <span class="setup-panel-label">Background</span>
+      <span class="setup-panel-summary" id="background-summary">Choose a background</span>
+      <span class="setup-panel-hint">Pick your route</span><span class="setup-panel-chevron" aria-hidden="true">⌄</span>
+    </button>
+    <div class="setup-panel-options" id="background-options" role="region" aria-labelledby="background-trigger" aria-hidden="true"><div class="setup-panel-options-inner">
+      <div class="background-cards" aria-label="Game background selection">
+        <button class="background-card background-city" type="button" data-background="city" onclick="selectBackground('city')" aria-pressed="false"><img class="background-preview" src="assets/stages/stage-city.svg" alt="City Route game environment preview"><strong>City Route</strong><small>Urban sprint</small></button>
+        <button class="background-card background-barangay" type="button" data-background="barangay" onclick="selectBackground('barangay')" aria-pressed="false"><img class="background-preview" src="assets/stages/stage-barangay.svg" alt="Barangay Run game environment preview"><strong>Barangay Run</strong><small>Neighborhood dash</small></button>
+        <button class="background-card background-school" type="button" data-background="school" onclick="selectBackground('school')" aria-pressed="false"><img class="background-preview" src="assets/stages/stage-campus.svg" alt="Campus Rush game environment preview"><strong>Campus Rush</strong><small>School grounds</small></button>
+      </div>
+    </div></div>
+  </section>
+  <p id="landing-validation" class="selection-validation" aria-live="polite"></p>
+  <section class="setup-panel" data-panel="character" data-step="03">
+    <button class="setup-panel-trigger" id="character-trigger" type="button" onclick="toggleLandingPanel('character')" aria-expanded="false" aria-controls="character-options">
+      <img class="setup-summary-character" id="character-summary-thumb" src="assets/images/male.png" alt="" aria-hidden="true">
+      <span class="setup-panel-label">Character</span>
+      <span class="setup-panel-summary" id="character-summary">Male</span>
+      <span class="setup-panel-hint">Choose your runner</span><span class="setup-panel-chevron" aria-hidden="true">⌄</span>
+    </button>
+    <div class="setup-panel-options" id="character-options" role="region" aria-labelledby="character-trigger" aria-hidden="true"><div class="setup-panel-options-inner">
+      <div class="character-select" aria-label="Character selection">
+        <button class="character-card selected" id="char-male" type="button" onclick="selectCharacter('male')" aria-pressed="true"><canvas class="character-canvas" id="male-preview" width="96" height="112" aria-hidden="true"></canvas><span class="char-label">Male</span></button>
+        <button class="character-card" id="char-female" type="button" onclick="selectCharacter('female')" aria-pressed="false"><canvas class="character-canvas" id="female-preview" width="96" height="112" aria-hidden="true"></canvas><span class="char-label">Female</span></button>
+      </div>
+    </div></div>
+  </section>
+  <div class="landing-action-area" aria-label="Game actions">
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="startSelectedLevel()"><span aria-hidden="true">▶</span> Maglaro Na!</button>
+    <button class="btn btn-secondary" onclick="openModal()"><span aria-hidden="true">?</span> Paano Maglaro</button>
+  </div>
+  </div>
+  </main>
+</div>
+
+<!-- ================================================
+     HOW TO PLAY MODAL
+================================================ -->
+<div id="modal-overlay" class="hidden">
+  <div class="modal-box">
+    <h2>Paano Maglaro?</h2>
+    <div class="htp-grid">
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p>Ang bida mo ay <strong>awtomatikong tumatakbo</strong>. Hindi mo kailangang tumulak ng takbo!</p>
+      </div>
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p><strong>Dumating ang hadlang</strong> na may math problem. Sagutin mo para makalampas!</p>
+      </div>
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p><strong>Tamang sagot</strong> = tumalon. Level 1-4 ay +10 puntos, Level 5-7 ay +20 puntos.</p>
+      </div>
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p><strong>Maling sagot</strong> = matamaan + mawalan ng life. Aray!</p>
+      </div>
+    </div>
+    <div class="lives-note">3 lives ka lang! Kailangan ng 15 tamang sagot bago umakyat sa susunod na level.</div>
+    <div class="htp-grid level-grid">
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p style="font-size:0.75rem;"><strong>Level 1</strong><br>Basic addition lang. Small numbers from 1 to 10.</p>
+      </div>
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p style="font-size:0.75rem;"><strong>Level 2</strong><br>Basic subtraction. No negative answers.</p>
+      </div>
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p style="font-size:0.75rem;"><strong>Level 3</strong><br>Basic multiplication. Easy times-table questions.</p>
+      </div>
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p style="font-size:0.75rem;"><strong>Level 4</strong><br>Basic division. Exact answers only.</p>
+      </div>
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p style="font-size:0.75rem;"><strong>Level 5</strong><br>Easy fill in the blank using small numbers.</p>
+      </div>
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p style="font-size:0.75rem;"><strong>Level 6</strong><br>Basic integers with addition and subtraction.</p>
+      </div>
+      <div class="htp-card">
+        <div class="icon"></div>
+        <p style="font-size:0.75rem;"><strong>Level 7</strong><br>Simple algebra. Find the value of x.</p>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="closeModal()" style="width:100%;">Sige, Handa Na Ako!</button>
+  </div>
+</div>
+
+<!-- ================================================
+     CUSTOMIZE MODAL
+================================================ -->
+<div id="customize-overlay" class="hidden">
+  <div class="customize-box">
+    <button class="modal-close" type="button" onclick="closeModal()" aria-label="Close menu">x</button>
+
+    <div class="customize-panel active" id="customize-menu-panel">
+      <h2>Customize</h2>
+      <div class="customize-menu-grid">
+        <button class="customize-menu-card" type="button" onclick="openCharacterSelection()">
+          <span class="customize-icon">Hero</span>
+          <strong>Select Character</strong>
+          <small>Choose your runner</small>
+        </button>
+      </div>
+    </div>
+
+    <div class="customize-panel" id="character-selection-panel">
+      <div class="modal-heading-row">
+        <button class="modal-back" type="button" onclick="openCustomizeMenu()">Back</button>
+        <h2>Select Character</h2>
+      </div>
+      <div id="character-selection-slot"></div>
+    </div>
+
+  </div>
+</div>
+<!-- ================================================
+     GAME SCREEN
+================================================ -->
+<div id="game-screen" class="screen hidden">
+  <canvas id="gameCanvas"></canvas>
+  <audio id="game-bgm" src="assets/audio/bgmusicone.mp3" preload="auto" loop></audio>
+
+  <!-- Cinematic intro shown after pressing Maglaro Na -->
+  <div id="story-sequence" class="hidden" aria-hidden="true">
+    <audio id="story-bgm" src="assets/audio/bgmusic.mp3" preload="auto" loop></audio>
+    <button id="story-skip-btn" type="button">Skip</button>
+    <div class="story-camera">
+      <div class="story-bg story-forest"></div>
+      <div class="forest-depth forest-back"></div>
+      <div class="forest-depth forest-mid"></div>
+      <div class="forest-depth forest-front"></div>
+      <div class="forest-ground"></div>
+      <div class="story-bg story-world"></div>
+      <div class="story-math-symbols" aria-hidden="true">
+        <span>7</span><span>+</span><span>12</span><span>-</span><span>3</span><span>x</span>
+        <span>=</span><span>9</span><span></span><span>4</span><span>25</span><span>?</span>
+      </div>
+      <div class="story-rays"></div>
+      <div class="story-door">
+        <div class="door-panel"></div>
+        <div class="door-light"></div>
+      </div>
+      <div class="story-path"></div>
+      <div class="portal-ground" aria-hidden="true"></div>
+      <img src="assets/images/male.png" alt="" class="story-character story-male">
+      <img src="assets/images/female.png" alt="" class="story-character story-female">
+      <div class="story-particles"></div>
+      <div class="story-speedlines"></div>
+    </div>
+    <div id="story-dialogue"></div>
+    <div id="story-center-text"></div>
+    <div class="story-ui-preview" aria-hidden="true">
+      <div class="story-score-preview">SCORE <strong>0</strong></div>
+      <div class="story-question-preview">
+        <div>5 + 3 = ?</div>
+        <div class="story-answer-preview">
+          <span>A</span><span>B</span><span>C</span><span>D</span>
+        </div>
+      </div>
+    </div>
+    <div class="story-flash"></div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div class="hud-pill">
+      <span class="label">SCORE</span>
+      <span class="hud-score-val" id="score-display">0</span>
+    </div>
+    <button id="pause-btn" type="button" aria-label="Pause game" aria-pressed="false"></button>
+    <div class="hud-pill">
+      <span class="label">LIVES</span>
+      <div class="lives-bar" id="lives-bar">
+        <span class="heart" id="h1" aria-hidden="true">♥</span>
+        <span class="heart" id="h2" aria-hidden="true">♥</span>
+        <span class="heart" id="h3" aria-hidden="true">♥</span>
+      </div>
+    </div>
+  </div>
+  <div id="session-context" aria-live="polite"></div>
+
+  <!-- Level Badge -->
+  <div id="level-badge">Level Up!</div>
+
+  <!-- Combo Popup -->
+  <div id="combo-popup"></div>
+
+  <!-- Question Panel -->
+  <div id="question-panel" class="hidden">
+    <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
+    <div id="question-text">5 + 3 = ?</div>
+    <div id="answer-grid">
+      <button class="ans-btn" id="ans0" onclick="selectAnswer(0)"><span class="key-hint">A</span><span id="ans-text-0"></span></button>
+      <button class="ans-btn" id="ans1" onclick="selectAnswer(1)"><span class="key-hint">B</span><span id="ans-text-1"></span></button>
+      <button class="ans-btn" id="ans2" onclick="selectAnswer(2)"><span class="key-hint">C</span><span id="ans-text-2"></span></button>
+      <button class="ans-btn" id="ans3" onclick="selectAnswer(3)"><span class="key-hint">D</span><span id="ans-text-3"></span></button>
+    </div>
+  </div>
+</div>
+
+<!-- LEVEL COMPLETE SCREEN -->
+<div id="completion-screen" class="screen hidden">
+  <div class="completion-emoji">🏆</div>
+  <div class="completion-msg">CONGRATULATIONS! ISA KANG MATHALINO! GALING!</div>
+  <div id="completion-sub" class="gameover-sub"></div>
+  <div class="score-card">
+    <div class="score-row"><span class="slabel">Lugar</span><span class="sval completion-location" id="complete-location"></span></div>
+    <div class="score-row"><span class="slabel">Score</span><span class="sval" id="complete-score">0</span></div>
+    <div class="score-row"><span class="slabel">Tamang Sagot</span><span class="sval" id="complete-correct">0</span></div>
+  </div>
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="replayLevel()">Ulitin ang Level</button>
+    <button class="btn btn-secondary" onclick="goToMenu()">Main Menu</button>
+  </div>
+</div>
+
+<!-- ================================================
+     PAUSE SCREEN
+================================================ -->
+<div id="pause-screen" class="hidden">
+  <h2>Nakahinga Ka Ba?</h2>
+  <p style="color:#90A4AE; font-size:1rem; font-weight:700;">Huy pahinga ka muna, okay lang yan!</p>
+  <div class="btn-group" style="margin-top:10px;">
+    <button class="btn btn-primary" onclick="togglePause()">Ituloy Na!</button>
+    <button class="btn btn-secondary" onclick="goToMenu()">Uwi Na</button>
+  </div>
+</div>
+
+<!-- ================================================
+     GAME OVER SCREEN
+================================================ -->
+<div id="gameover-screen" class="screen hidden">
+  <audio id="gameover-sfx" src="assets/audio/bggameover.mp3" preload="auto"></audio>
+  <div class="gameover-emoji" id="go-emoji"></div>
+  <div class="gameover-msg" id="go-msg">Game Over!</div>
+  <div class="gameover-sub" id="go-sub">Subukan ulit!</div>
+  <div class="score-card">
+    <div class="score-row">
+      <span class="slabel">Score Mo</span>
+      <span class="sval" id="go-score">0</span>
+    </div>
+    <div class="score-row">
+      <span class="slabel">Pinakamataas</span>
+      <span class="sval best" id="go-best">0</span>
+    </div>
+    <div class="score-row">
+      <span class="slabel">Level Na-reach</span>
+      <span class="sval" id="go-level">1</span>
+    </div>
+    <div class="score-row">
+      <span class="slabel">Tamang Sagot</span>
+      <span class="sval" id="go-correct">0</span>
+    </div>
+  </div>
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="replayLevel()">Ulitin ang Level</button>
+    <button class="btn btn-secondary" onclick="goToMenu()">Main Menu</button>
+  </div>
+</div>
+
+<script src="js/script.js"></script>
+</body>
+</html>

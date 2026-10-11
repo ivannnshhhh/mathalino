@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" role="img" aria-label="Campus Rush preview">
+  <defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#203b69"/><stop offset="1" stop-color="#b9e3ef"/></linearGradient><linearGradient id="walk" x2="0" y2="1"><stop stop-color="#8295a0"/><stop offset="1" stop-color="#3b4a5b"/></linearGradient></defs>
+  <rect width="800" height="420" fill="url(#sky)"/><path d="M0 255h800v165H0z" fill="#75a96d"/>
+  <path d="M130 122h540v168H130z" fill="#e7e1d2"/><path d="M150 95h500v35H150z" fill="#314966"/><path d="M212 150h95v100h-95zm141 0h95v100h-95zm141 0h95v100h-95z" fill="#5e9fc3"/>
+  <g fill="#1d354f"><path d="M228 167h63v10h-63zm141 0h63v10h-63zm141 0h63v10h-63z"/></g>
+  <path d="M0 420 280 278h240l280 142z" fill="url(#walk)"/><path d="M0 376h800" stroke="#dce9e9" stroke-width="4" opacity=".65"/>
+  <g fill="#244a3f"><circle cx="90" cy="235" r="54"/><circle cx="710" cy="230" r="58"/></g><g fill="#6c4c32"><path d="M84 234h13v80H84zm620-2h14v84h-14z"/></g>
+  <path d="M350 302h100v25H350z" fill="#56e7e5" opacity=".75"/>
+</svg>
