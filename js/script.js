@@ -689,13 +689,13 @@ const Audio = (() => {
 const Questions = (() => {
   const DIFFICULTY_LABELS = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
   const DIFFICULTY_TIMERS = {
-    1: { easy: 5, medium: 8, hard: 11 },
-    2: { easy: 6, medium: 9, hard: 12 },
-    3: { easy: 7, medium: 10, hard: 13 },
-    4: { easy: 8, medium: 11, hard: 14 },
-    5: { easy: 9, medium: 12, hard: 15 },
-    6: { easy: 10, medium: 13, hard: 16 },
-    7: { easy: 11, medium: 14, hard: 17 }
+    1: { easy: 5, medium: 6, hard: 8 },
+    2: { easy: 5, medium: 6, hard: 8 },
+    3: { easy: 5, medium: 7, hard: 9 },
+    4: { easy: 5, medium: 7, hard: 9 },
+    5: { easy: 12, medium: 12, hard: 12 },
+    6: { easy: 15, medium: 15, hard: 15 },
+    7: { easy: 18, medium: 18, hard: 18 }
   };
 
   function randInt(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
@@ -718,16 +718,32 @@ const Questions = (() => {
     return DIFFICULTY_TIMERS[level]?.[difficulty] || 8;
   }
 
+  function arithmeticDifficulty(level, operands, fallback) {
+    if (!operands || level < 1 || level > 4) return fallback;
+    const [a, b] = operands;
+
+    if (level === 1) return Math.max(a, b) <= 9 ? 'easy' : a + b < 60 ? 'medium' : 'hard';
+    if (level === 2) {
+      const borrows = borrowCount(a, b);
+      return a <= 20 && borrows === 0 ? 'easy' : borrows >= 2 || (a >= 70 && b >= 30) ? 'hard' : 'medium';
+    }
+    if (level === 3) return a * b <= 25 ? 'easy' : a * b <= 81 && Math.max(a, b) <= 9 ? 'medium' : 'hard';
+
+    // The dividend captures the size of the division fact the player must solve.
+    return a <= 30 ? 'easy' : a <= 100 ? 'medium' : 'hard';
+  }
+
   function formatIntegerTerm(value) {
     return value < 0 ? `(${value})` : `${value}`;
   }
 
   function withMeta(problem, level, difficulty, skill) {
+    const questionDifficulty = arithmeticDifficulty(level, problem.operands, difficulty);
     return {
       ...problem,
-      difficulty,
-      difficultyLabel: DIFFICULTY_LABELS[difficulty],
-      timer: timerFor(level, difficulty),
+      difficulty: questionDifficulty,
+      difficultyLabel: DIFFICULTY_LABELS[questionDifficulty],
+      timer: timerFor(level, questionDifficulty),
       skill
     };
   }
@@ -735,7 +751,7 @@ const Questions = (() => {
   function binaryQuestion(a, op, b, ans, integerFormat = false) {
     const left = integerFormat ? formatIntegerTerm(a) : `${a}`;
     const right = integerFormat ? formatIntegerTerm(b) : `${b}`;
-    return { q: `${left} ${op} ${right} = ?`, ans };
+    return { q: `${left} ${op} ${right} = ?`, ans, operands: [a, b] };
   }
 
   function addition(difficulty) {
@@ -749,10 +765,9 @@ const Questions = (() => {
       const b = randInt(6, 29);
       return binaryQuestion(a, '+', b, a + b);
     }
-    const terms = Math.random() < 0.45
-      ? [randInt(20, 99), randInt(20, 99), randInt(5, 39)]
-      : [randInt(100, 199), randInt(25, 99)];
-    return { q: `${terms.join(' + ')} = ?`, ans: terms.reduce((sum, value) => sum + value, 0) };
+    const a = randInt(100, 199);
+    const b = randInt(25, 99);
+    return binaryQuestion(a, '+', b, a + b);
   }
 
   function hasBorrowing(a, b) {
@@ -838,17 +853,10 @@ const Questions = (() => {
   }
 
   function fillBlank(difficulty) {
-    const type = difficulty === 'easy' ? pick(['add', 'sub']) : pick(['add', 'sub', 'mul']);
+    const type = pick(['add', 'sub']);
     if (type === 'add') {
       const missing = randInt(difficulty === 'hard' ? 20 : 3, difficulty === 'easy' ? 9 : difficulty === 'medium' ? 25 : 60);
       const shown = randInt(difficulty === 'hard' ? 15 : 2, difficulty === 'easy' ? 9 : difficulty === 'medium' ? 25 : 70);
-      if (difficulty === 'hard') {
-        const adjust = randInt(3, 12);
-        return { q: `__ + ${shown} - ${adjust} = ${missing + shown - adjust}`, ans: missing };
-      }
-      if (difficulty === 'medium' && Math.random() < 0.5) {
-        return { q: `${missing + shown} = __ + ${shown}`, ans: missing };
-      }
       return Math.random() < 0.5
         ? { q: `__ + ${shown} = ${missing + shown}`, ans: missing }
         : { q: `${shown} + __ = ${missing + shown}`, ans: missing };
@@ -856,21 +864,10 @@ const Questions = (() => {
     if (type === 'sub') {
       const missing = randInt(difficulty === 'hard' ? 18 : 3, difficulty === 'easy' ? 9 : difficulty === 'medium' ? 24 : 55);
       const ans = randInt(difficulty === 'hard' ? 15 : 2, difficulty === 'easy' ? 9 : difficulty === 'medium' ? 25 : 65);
-      if (difficulty === 'hard') {
-        const adjust = randInt(2, 9);
-        return { q: `${missing + ans + adjust} - __ + ${adjust} = ${ans}`, ans: missing + adjust * 2 };
-      }
-      return { q: `${missing + ans} - __ = ${ans}`, ans: missing };
+      return Math.random() < 0.5
+        ? { q: `${missing + ans} - __ = ${ans}`, ans: missing }
+        : { q: `__ - ${missing} = ${ans}`, ans: missing + ans };
     }
-    const factor = randInt(difficulty === 'hard' ? 6 : 2, difficulty === 'medium' ? 9 : 12);
-    const missing = randInt(difficulty === 'hard' ? 8 : 2, difficulty === 'medium' ? 9 : 12);
-    if (difficulty === 'hard') {
-      const offset = randInt(5, 18);
-      return { q: `__ × ${factor} + ${offset} = ${missing * factor + offset}`, ans: missing };
-    }
-    return difficulty === 'medium' && Math.random() < 0.5
-      ? { q: `__ × ${factor} = ${missing * factor}`, ans: missing }
-      : { q: `${factor} × __ = ${missing * factor}`, ans: missing };
   }
 
   function nonZeroInteger(limit, sign = null) {
@@ -894,14 +891,10 @@ const Questions = (() => {
       const op = Math.random() < 0.5 ? '+' : '-';
       return binaryQuestion(a, op, b, op === '+' ? a + b : a - b, true);
     }
-    const a = nonZeroInteger(15);
-    const b = nonZeroInteger(15);
-    const c = nonZeroInteger(10);
+    const a = nonZeroInteger(20);
+    const b = nonZeroInteger(20);
     const op = pick(['+', '-']);
-    const secondOp = pick(['+', '-']);
-    const ans = op === '+' ? a + b : a - b;
-    const finalAns = secondOp === '+' ? ans + c : ans - c;
-    return { q: `${formatIntegerTerm(a)} ${op} ${formatIntegerTerm(b)} ${secondOp} ${formatIntegerTerm(c)} = ?`, ans: finalAns };
+    return binaryQuestion(a, op, b, op === '+' ? a + b : a - b, true);
   }
 
   function algebra(difficulty) {
@@ -917,16 +910,10 @@ const Questions = (() => {
     }
 
     const coefficient = randInt(2, difficulty === 'medium' ? 7 : 9);
-    if (difficulty === 'medium') {
-      return Math.random() < 0.5
-        ? { q: `${coefficient}x + ${n} = ${coefficient * x + n}`, ans: x }
-        : { q: `${coefficient}x - ${n} = ${coefficient * x - n}`, ans: x };
-    }
-
-    const rightX = randInt(1, coefficient - 1);
-    const leftConstant = randInt(3, 16);
-    const rightConstant = coefficient * x + leftConstant - rightX * x;
-    return { q: `${coefficient}x + ${leftConstant} = ${rightX}x + ${rightConstant}`, ans: x };
+    const type = pick(['add', 'sub', 'mul']);
+    if (type === 'add') return { q: `x + ${n} = ${x + n}`, ans: x };
+    if (type === 'sub') return { q: `x - ${n} = ${x - n}`, ans: x };
+    return { q: `${coefficient}x = ${coefficient * x}`, ans: x };
   }
 
   function levelProblem(level, difficulty) {
